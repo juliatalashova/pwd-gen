@@ -4,10 +4,7 @@ import './index.css';
 import Generator from './Generator';
 
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Generator />
-  </React.StrictMode>,
+ReactDOM.render(<Generator />,
   document.getElementById('root')
 );
 

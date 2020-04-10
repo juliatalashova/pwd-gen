@@ -1,5 +1,12 @@
 import React from 'react';
 
+
+let UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+let LOWERCASE = 'abcdefghijklmnopqrstuvwxyz'
+let NUMBERS = '0123456789'
+let SYMBOLS = '!"#$%&\'()*+,-./:;<=>?@^[\\]^_`{|}~'
+
+
 function Slider({ min, max, value, onChange }) {
   return <div className="slider-container">
     <span>Length</span>
@@ -15,28 +22,25 @@ function Check({ label, name, id, checked, onChange, readonly = false }) {
   </label>
 }
 
-let password = function generate(options) {
-  let uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  let lowercase = 'abcdefghijklmnopqrstuvwxyz'
-  let numbers = '0123456789'
-  let symbols = '!"#$%&\'()*+,-./:;<=>?@^[\\]^_`{|}~'
+function generate(options) {
+
   let all
   let password = ''
   if (options.withNumbers === true) {
-    all = numbers;
+    all = NUMBERS;
   }
   if (options.withSymbols === true) {
-    all += symbols;
+    all += SYMBOLS;
   }
   if (options.withLowercase === true) {
-    all += lowercase;
+    all += LOWERCASE;
   }
   if (options.withUppercase === true) {
-    all += uppercase;
+    all += UPPERCASE;
   }
   for (let index = 0; index < options.length; index++) {
     let character = Math.floor(Math.random() * all.length)
-    password += all.substring(character, character + 1)
+    password += all.slice(character, character + 1)
   }
   return password
 
@@ -50,32 +54,28 @@ class Generator extends React.Component {
     withUppercase: false,
     withSymbols: false
   }
-
-  setWithLowercase = (event) => {
-    this.setState({withLowercase: event.target.checked})
-  }
-  setWithUppercase = (event) => {
-    this.setState({withUppercase: event.target.checked})
-  }
-  setWithSymbols = (event) => {
-    this.setState({withSymbols: event.target.checked})
-  }
-
   setLength = (e) => {
     this.setState({ length: e.target.value });
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-  }
   updateState = () => {
-    this.setState({ pwd: password({...this.state}) });
+    this.setState({ pwd: generate({...this.state}) });
   }
+  onChange = (event) => {
+    let {type} = event.target
+    let value
+    if (type === "checkbox") {
+      value = event.target.checked
+    }  else {
+      value = event.target.value
+    }
 
+    this.setState({[event.target.name]: value})
+  }
   render() {
     return (
       <div className="container">
-        <form className="pwd-generation" onSubmit={this.handleSubmit}>
+        <form className="pwd-generation">
           <fieldset>
             <legend>Generate a secure password</legend>
             <input type="text" name="output" className="result"
@@ -92,22 +92,19 @@ class Generator extends React.Component {
                  checked={this.state.withNumbers}
                  readonly={true}
             />
-            <Check label="Lowercase" name="lowercase"
+            <Check label="Lowercase" name="withLowercase"
                  id="lowercase"
-                 onChange={this.setWithLowercase}
-                 checked={this.state.withLowercase}
+                 onChange={this.onChange}
             />
-            <Check label="Uppercase" name="uppercase"
+            <Check label="Uppercase" name="withUppercase"
                  id="uppercase"
-                 onChange={this.setWithUppercase}
-                 checked={this.state.withUppercase}
+                 onChange={this.onChange}
             />
-            <Check label="Symbols" name="symbols"
+            <Check label="Symbols" name="withSymbols"
                  id="symbols"
-                 onChange={this.setWithSymbols}
-                 checked={this.state.withSymbols}
+                 onChange={this.onChange}
             />
-            <button type="submit" onClick={this.updateState}>generate</button>
+            <button type="button" onClick={this.updateState}>generate</button>
           </fieldset>
         </form>
       </div>
